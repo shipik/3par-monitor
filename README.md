@@ -2,9 +2,11 @@
 HP 3PAR Storage Monitor
 
 SYNOPSIS
-    check_3par.pl CHECK_COMMAND [3PAR_IP/NAME] [USER] [PASS]
+
+  check_3par.pl CHECK_COMMAND [3PAR_IP/NAME] [USER] [PASS]
 
 CHECK_COMMAND
+
     check_pd
          Displays configuration information about system's physical disks.
 
@@ -15,6 +17,7 @@ CHECK_COMMAND
          Shows information about virtual volumes (VVs) in the system.
 
 DESCRIPTION
+
     Script uses Expect to login to 3par service processor via ssh. There is
     no additional software required.
 
@@ -24,5 +27,6 @@ DESCRIPTION
       06.10.16 V1.0 (vs). Fixed return codes missmatch. Added nodes count.
 
 TODO
+
     showbattery showcpg showcage showport
 
