@@ -1,5 +1,5 @@
 # 3par-monitor
-HP 3PAR Storage Monitor
+HP 3PAR Storage Monitor - Health Check
 
 SYNOPSIS
 
@@ -8,23 +8,51 @@ SYNOPSIS
 CHECK_COMMAND
 
     check_pd
-         Displays configuration information about system's physical disks.
+         Shows state information about system's physical disks.
 
     check_node
-         Displays detailed state information for node or power supply.
+         Shows state information for nodes or power supply.
 
     check_vv
-         Shows information about virtual volumes (VVs) in the system.
+         Shows state information about virtual volumes (VVs) in the system.
 
 DESCRIPTION
 
-    Script uses Expect to login to 3par service processor via ssh. There is
-    no additional software required.
+    Perl script uses Expect to login to 3par service processor via ssh. There is
+    no additional software required. Can be used for nagios, op5, etc. monitoring.
 
-      09.09.16 V0.1 (vs). Initial version
-      13.09.16 V0.9 (vs). Final draft
-      14.09.16 V1.0 (vs). Added commands: check_pd,check_node,check_vv
-      06.10.16 V1.0 (vs). Fixed return codes missmatch. Added nodes count.
+EXAMPLES
+
+    #> check_3par.pl check_pd 3par-sp.mycompany.net monitor monitor123
+
+    Output:
+
+     OK! 272 PDs online.
+     CRITICAL! PDs in FAILED status   (check 'showpd -failed'):   8 (0:8:0),
+     WARNING!  PDs in DEGRADED status (check 'showpd -degraded'): 8 (0:8:0),
+     INFO!     PDs in NEW status      (check 'showpd -state'):    3 (0:3:0),
+     CRITICAL! PDs in FAILED status   (check 'showpd -failed'):   8 (0:8:0), WARNING! PDs in DEGRADED status (check 'showpd -degraded'): 6 (0:6:0), 7 (0:7:0),
+     8 (0:8:0) => ID (CagePos)
+
+    #> check_3par.pl check_node 3par-sp.mycompany.net monitor monitor123
+
+    Output:
+
+     OK!  nodes online.
+     CRITICAL! nodes in FAILED status   (check 'shownode -state'): 2 (pci_error, unknown),
+     WARNING!  nodes in DEGRADED status (check 'shownode -state'): 1 (cpu_vrm_overheating,tod_bat_fail),
+     CRITICAL! nodes in FAILED status   (check 'shownode -state'): 2 (pci_error, unknown), WARNING!  nodes in DEGRADED status (check 'shownode -state'): 1 (cpu_vrm_overheating,tod_bat_fail), 
+     2 (pci_error, unknown) => NODE_ID (Detailed_State)
+
+    #> check_3par.pl check_vv 3par-sp.mycompany.net monitor monitor123
+
+    Output:
+
+     OK! 130 VVs online.
+     CRITICAL! VVs in FAILED status   (check 'showvv -state'): 7 (fc_vol.1),
+     WARNING!  VVs in DEGRADED status (check 'showvv -state'): 1 (.srdata),
+     CRITICAL! VVs in FAILED status   (check 'showvv -state'): 7 (fc_vol.1), 8 (fc_vol.2), WARNING!  VVs in DEGRADED status (check 'showvv -state'): 1 (.srdata), 9 (fc_vol.3),
+     7 (fc_vol.1) => VV_ID (VV_NAME)
 
 TODO
 
