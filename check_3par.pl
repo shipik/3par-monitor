@@ -28,6 +28,10 @@ Displays detailed state information for node or power supply.
 
 Shows information about virtual volumes (VVs) in the system.
 
+=item B<showalert>
+
+Displays the status of system alerts.
+
 =back
 
 =head1 DESCRIPTION
