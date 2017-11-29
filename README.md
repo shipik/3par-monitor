@@ -16,6 +16,9 @@ CHECK_COMMAND
     check_vv
          Shows state information about virtual volumes (VVs) in the system.
 
+    showalert
+         Displays the status of system alerts.
+
 DESCRIPTION
 
     Perl script uses Expect to login to 3par service processor via ssh. There is
@@ -53,6 +56,14 @@ EXAMPLES
      WARNING!  VVs in DEGRADED status (check 'showvv -state'): 1 (.srdata),
      CRITICAL! VVs in FAILED status   (check 'showvv -state'): 7 (fc_vol.1), 8 (fc_vol.2), WARNING!  VVs in DEGRADED status (check 'showvv -state'): 1 (.srdata), 9 (fc_vol.3),
      7 (fc_vol.1) => VV_ID (VV_NAME)
+
+    #> check_3par.pl showalert 3par-sp.mycompany.net monitor monitor123
+
+    Output:
+
+     OK! No new alerts.
+     CRITICAL! Alerts with severity Fatal, Critical or Major (check 'showalert -n'),
+     WARNING!  Alerts with severity DEGRADED (check 'showalert -n'),
 
 TODO
 
