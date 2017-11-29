@@ -38,6 +38,7 @@ Script uses Expect to login to 3par service processor via ssh. There is no addit
   13.09.16 V0.9 (vs). Final draft
   14.09.16 V1.0 (vs). Added commands: check_pd,check_node,check_vv
   06.10.16 V1.0 (vs). Fixed return codes missmatch. Added nodes count.
+  14.09.16 V1.0 (vs). Added commands: showalert
 
 =head1 TODO
 
@@ -61,7 +62,7 @@ use strict;
 use Data::Dumper;
 use Expect;
 
-my $VERSION = 'V1.0';
+my $VERSION = 'V1.1';
 my $timeout = 60;
 my $srv = "";
 my $user = "3parmon";
@@ -72,6 +73,7 @@ my %checkCommands = (
                       'check_pd'    => 'showpd -showcols Id,CagePos,State', # Displays configuration information about a system's physical disks.
                       'check_node'  => 'shownode -state', # Displays the detailed state information for node or power supply.
                       'check_vv'    => 'showvv -showcols Id,Name,State', # Shows information about virtual volumes (VVs) in the system.
+                      'showalert'   => 'showalert -n', # Displays the status of system alerts.
                     );
 my %returnCodes   = (
                       'OK'        => '0',
@@ -398,6 +400,56 @@ COMMENT
   if($vvsFailed   > 0 && $vvsDegraded > 0){
     $strOut     =  $strOutFailed.$strOutDegraded;
     $returnState = 'CRITICAL';
+  }
+
+  print "$strOut\n";
+  $exp->soft_close();
+  exit $returnCodes{$returnState};
+}
+elsif($checkCommand eq "showalert"){
+
+=pod
+
+#> B<check_3par.pl> showalert 3par-sp.mycompany.net monitor monitor123
+
+Output:
+
+ OK! No new alerts.
+ CRITICAL! Alerts with severity Fatal, Critical or Major (check 'showalert -n'),
+ WARNING!  Alerts with severity DEGRADED (check 'showalert -n'),
+
+=cut
+
+<<'COMMENT';
+#> showalert -n
+
+  Id          : 219
+  State       : New
+  Message Code: 0x0450001
+  Time        : 2017-11-29 09:12:08 CET
+  Severity    : Major
+  Type        : Data Cache DIMM CECC Monitoring
+  Message     : Node 1, Data Cache DIMM 0.1.0 is failing. Correctable ECC limit exceeded.
+
+COMMENT
+
+  my $alertsTotal    = 0;
+  my $nodesFailed   = 0;
+  my $nodesDegraded = 0;
+  my $strOut          = "OK! No Alerts.";
+  my $strOutFailed    = "CRITICAL! Alerts with severity Fatal, Critical or Major (check 'showalert -n'): ";
+  my $strOutDegraded  = "WARNING!  Alerts with severity DEGRADED (check 'showalert -n'): ";
+
+  $out[3] =~ s/^\s*----+.*//gms;
+
+  $returnState = 'OK';
+  if($out[3] =~ /\nState\s+:\s+New/i && $out[3] =~ /Severity\s+:\s+Fatal|Critical|Major/i){
+    $strOut =  $strOutFailed." ".$out[3];
+    $returnState = 'CRITICAL';
+  }
+  elsif($out[3] =~ /State\s+:\s+New/i && $out[3] =~ /Severity\s+:\s+Degraded/i){
+    $strOut =  $strOutDegraded." ".$out[3];
+    $returnState = 'WARNING';
   }
 
   print "$strOut\n";
