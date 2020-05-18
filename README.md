@@ -1,6 +1,13 @@
 # 3par-monitor
 HP 3PAR Storage Monitor - Health Check
 
+NAME
+    check_3par.pl - HP 3PAR Storage Monitor - Health Check
+
+AUTHOR
+
+    Vladimir Shapovalov
+    
 SYNOPSIS
 
   check_3par.pl CHECK_COMMAND [3PAR_IP/NAME] [USER] [PASS]
